@@ -9,24 +9,6 @@
 	<script type="text/javascript" src="jquery.mq-sync.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function () {
-			$('html').mqSync({
-				//queriedElement: $('body'), // Override the queried element
-			});
-
-			$('#check-media-query').click(function () {
-				$('#result').text($('html').mqSync.getMediaQuery());
-
-				// Test against the mqSync plugin
-				if ($('html').mqSync.matches('mq-min-large')) {
-					$('#result').append('<br /> Matches large');
-				}
-
-				// Test against the data value
-				if ($('body').data('media-query') == 'mq-min-medium') {
-					$('#result').append('<br /> Matches medium')
-				}
-			});
-
 			// This event fires when the media query changes
 			$('html').on('mediaQueryChange', function (event, newMediaQuery, oldMediaQuery) {
 				// Update the result label to show the new media query
@@ -46,8 +28,12 @@
 				});
 			};
 
-			// Update the current responsive image size
-			updateResponsiveImages($('html').mqSync.getMediaQuery());
+			$('document').ready(function () {
+				// Update the current responsive image size
+				updateResponsiveImages(mqSync.getMediaQuery());
+
+				$('#result').text(mqSync.getMediaQuery());
+			});
 
 			// Update responsive images on media query change
 			$('html').on('mediaQueryChange', function (event, newMediaQuery, oldMediaQuery) {
@@ -58,12 +44,7 @@
 </head>
 <body>
 
-	<div>
-		<div id="result">
-			Click the button or resize to see the current media query
-		</div>
-
-		<button id="check-media-query">Check Media Query</button>
+	<div id="result">
 	</div>
 
 
