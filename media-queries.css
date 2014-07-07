@@ -22,6 +22,11 @@ html {
 		font-family: 'mq-xlarge';
 	}
 }
+@media (min-width: 1600px) {
+	html {
+		font-family: 'mq-xxlarge';
+	}
+}
 
 /* Make sure body font doesn't try to use the media query */
 body {

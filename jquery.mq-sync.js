@@ -1,6 +1,6 @@
 var mqSync = {
-	// The current media query
-	currentMediaQuery: '',
+	currentMediaQuery: '', // The current media query
+	mqOrder: [], // The order of the media queries
 
 	// Set up the media query plugin
 	init: function (options) {
@@ -18,6 +18,7 @@ var mqSync = {
 		return currentMediaQuery;
 	},
 
+
 	// Alias to get the current media query
 	mq: this.getMediaQuery,
 
@@ -26,6 +27,24 @@ var mqSync = {
 	matches: function (requestedQueryName) {
 		// See if the current media query matches the requested one
 		return (currentMediaQuery == requestedQueryName);
+	},
+
+
+	// Check if the media query is greater than the specified
+	isAbove: function (smallerSize) {
+		if (this.mqOrder[currentMediaQuery] > this.mqOrder[smallerSize])
+			return true;
+
+		return false;
+	},
+
+
+	// Check if the media query is less than the specified
+	isBelow: function (biggerSize) {
+		if (this.mqOrder[currentMediaQuery] < this.mqOrder[biggerSize])
+			return true;
+
+		return false;
 	},
 
 
@@ -39,7 +58,7 @@ var mqSync = {
 		// The media query does not match the old
 		if (currentMediaQuery != lastQuery) {
 			// Fire an event noting that the media query has changed
-			$('html').trigger('mediaQueryChange', currentMediaQuery, lastQuery);
+			$('html').trigger('mediaQueryChange', [currentMediaQuery, lastQuery]);
 			$('body').data('media-query', currentMediaQuery);
 		}
 
@@ -48,7 +67,6 @@ var mqSync = {
 
 	// Read in the media query
 	fetchMediaQuery: function () {
-		console.log('fetchMediaQuery');
 		// We read in the media query name from the html element's font family
 		var mq = $('html').css('font-family');
 
@@ -59,7 +77,16 @@ var mqSync = {
 	},
 
 	// Set the order of media queries
-	setOrder: function () {
+	setOrder: function (orderedArray) {
+		var mqName;
+
+		// Loop through the supplied media queries
+		for (var i = 0; i < orderedArray.length; i++) {
+			mqName = orderedArray[i];
+
+			// Make an associative array we can use
+			this.mqOrder[mqName] = i;
+		}
 	}
 
 };

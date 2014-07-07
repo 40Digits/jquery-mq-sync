@@ -29,16 +29,37 @@
 			};
 
 			$('document').ready(function () {
+				var mqOrder = [
+					'mq-small',
+					'mq-medium',
+					'mq-large',
+					'mq-xlarge',
+					'mq-xxlarge'
+				];
+
 				// Update the current responsive image size
 				updateResponsiveImages(mqSync.getMediaQuery());
 
 				$('#result').text(mqSync.getMediaQuery());
+
+				// Set the order of media queries we're using
+				mqSync.setOrder(mqOrder);
 			});
 
-			// Update responsive images on media query change
-			$('html').on('mediaQueryChange', function (event, newMediaQuery, oldMediaQuery) {
+			// Every time the media query changes, do these things
+			function onMediaQueryChange (event, newMediaQuery, oldMediaQuery) {
 				updateResponsiveImages(newMediaQuery);
-			});
+
+				console.log('Media query switched to ' + newMediaQuery + ' from ' + oldMediaQuery);
+
+				if (mqSync.isBelow('mq-large'))
+					console.log(currentMediaQuery + ' is smaller than large');
+
+				if (mqSync.isAbove('mq-large'))
+					console.log(currentMediaQuery + ' is bigger than large');
+			}
+
+			$('html').on('mediaQueryChange', onMediaQueryChange);
 		});
 	</script>
 </head>
@@ -48,7 +69,7 @@
 	</div>
 
 
-	<img class="responsive" src="images/400x320.jpg" data-mq-small-src="images/400x320.jpg" data-mq-medium-src="images/800x640.jpg" data-mq-large-src="images/1000x800.jpg" alt="Responsive image" />
+	<img class="responsive" src="images/480x270.jpg" data-mq-small-src="images/480x270.jpg" data-mq-medium-src="images/800x450.jpg" data-mq-large-src="images/1024x575.jpg" data-mq-xlarge-src="images/1280x720.jpg" data-mq-xxlarge-src="images/2048x1150.jpg" alt="Responsive image" />
 
 </body>
 </html>
