@@ -25,4 +25,4 @@ $('html').on('mediaQueryChange', function (event, newMediaQuery, oldMediaQuery) 
 
 Here we have it printing out the old media query and the new to the console.  You can do a lot more advanced stuff, though, like make it pull in different image sizes depending on your current media query--check out `index.html` to see some code to do just that!
 
-All images are [CC-by-SA](https://creativecommons.org/licenses/by-sa/2.0/).  All photo credits go to [Jyrki Salmi](https://www.flickr.com/photos/salman2000/9321259912/in/photolist-8AzFse-9cNVnJ-fcFTPN-QpGE-cigLrb-bvFnmV-awLfbF-auM1AF-2AtmWK-yvc5B-4eP2yG-QpGr-mFJ193-8H5Nv-585qnn-6tQ2KE-3uLPK-dX5HFw-heSew-ckFbbs-g45UrJ-newZyv-8ZcSiK-g45UC5-6faMZ9-fxbNsT-8ytZp8-9AfWjq-2ReWd-fKcQ2o-necG2M-9LrHyW-g45UdB-vzAmt-8ow9c2-52SctX-hr4Cpf-KsVwc-fBFrKD-bjkro-bo6mrm-aniwe9-6Gk4gZ-dJ8LNL-bvY5MN-6VATrQ-5rJX77-eKeG2a-v73ru-69VvCX) for his wonderful work.
+All images are [CC-by-SA](https://creativecommons.org/licenses/by-sa/2.0/).  All photo credits go to [Jyrki Salmi](https://www.flickr.com/photos/salman2000/9321259912/) for his wonderful work.
