@@ -87,11 +87,48 @@ var mqSync = {
 			// Make an associative array we can use
 			this.mqOrder[mqName] = i;
 		}
+	},
+
+	// This module resizes images automatically
+	resizeImages: function() {
+		// Initialize events
+		var init = function() {
+			// Every time the media query changes, do these things
+			function onMediaQueryChange (event, newMediaQuery, oldMediaQuery) {
+				updateResponsiveImages(newMediaQuery);
+			}
+
+			$('html').on('mediaQueryChange', onMediaQueryChange);
+
+			// Update the current responsive image size
+			updateResponsiveImages(mqSync.getMediaQuery());
+		};
+
+		// Run through each responsive image and see if an image exists at that media query
+		var updateResponsiveImages = function (newMediaQuery) {
+			$('img.responsive').each(function () {
+				var $img = $(this),
+					currentSource = $img.data(newMediaQuery + '-src');
+
+				// There is an image supplied for this media query
+				if (currentSource) {
+					$img.attr('src', currentSource);
+				}
+			});
+		};
+
+		return {
+			init: init,
+			updateResponsiveImages: updateResponsiveImages
+		};
 	}
 
 };
 
-
+// Do this stuff when the page is ready
 $(document).ready(function () {
 	mqSync.init();
+
+	// Resize images automatically
+	mqSync.resizeImages().init();
 });

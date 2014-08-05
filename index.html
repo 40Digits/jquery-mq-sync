@@ -5,50 +5,34 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>jQuery Media Query sync</title>
 	<link rel="stylesheet" href="media-queries.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="vendor/jquery.js"></script>
 	<script type="text/javascript" src="jquery.mq-sync.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function () {
+
+			var mqOrder = [
+				'mq-small',
+				'mq-medium',
+				'mq-large',
+				'mq-xlarge',
+				'mq-xxlarge'
+			];
+
+			// Update the result label to the current media query
+			$('#result').text(mqSync.getMediaQuery());
+
+			// Set the order of media queries we're using
+			mqSync.setOrder(mqOrder);
+
 			// This event fires when the media query changes
 			$('html').on('mediaQueryChange', function (event, newMediaQuery, oldMediaQuery) {
 				// Update the result label to show the new media query
 				$('#result').text(newMediaQuery);
 			});
 
-			// Run through each responsive image and see if an image exists at that media query
-			function updateResponsiveImages(newMediaQuery) {
-				$('img.responsive').each(function () {
-					var $img = $(this),
-						currentSource = $img.data(newMediaQuery + '-src');
-
-					// There is an image supplied for this media query
-					if (currentSource) {
-						$img.attr('src', currentSource);
-					}
-				});
-			};
-
-			$('document').ready(function () {
-				var mqOrder = [
-					'mq-small',
-					'mq-medium',
-					'mq-large',
-					'mq-xlarge',
-					'mq-xxlarge'
-				];
-
-				// Update the current responsive image size
-				updateResponsiveImages(mqSync.getMediaQuery());
-
-				$('#result').text(mqSync.getMediaQuery());
-
-				// Set the order of media queries we're using
-				mqSync.setOrder(mqOrder);
-			});
-
 			// Every time the media query changes, do these things
 			function onMediaQueryChange (event, newMediaQuery, oldMediaQuery) {
-				updateResponsiveImages(newMediaQuery);
+				mqSync.resizeImages().updateResponsiveImages(newMediaQuery);
 
 				console.log('Media query switched to ' + newMediaQuery + ' from ' + oldMediaQuery);
 
