@@ -11,12 +11,7 @@
 	<script type="text/javascript">
 		$(document).ready(function () {
 
-			// Every time the media query changes, do these things
-			function onMediaQueryChange (event, newMediaQuery, oldMediaQuery) {
-				mqSync.resizeImages().updateResponsiveImages(newMediaQuery);
-			}
 
-			$('html').on('mediaQueryChange', onMediaQueryChange);
 		});
 	</script>
 

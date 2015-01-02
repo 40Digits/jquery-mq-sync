@@ -89,23 +89,26 @@ var mqSync = {
 		}
 	},
 
-	// This module resizes images automatically
-	resizeImages: function() {
+	// This module resizes responsive images automatically
+	responsiveImages: {
+
 		// Initialize events
-		var init = function() {
+		init: function() {
+			var self = this;
+
 			// Every time the media query changes, do these things
 			function onMediaQueryChange (event, newMediaQuery, oldMediaQuery) {
-				updateResponsiveImages(newMediaQuery);
+				self.update(newMediaQuery);
 			}
 
 			$('html').on('mediaQueryChange', onMediaQueryChange);
 
 			// Update the current responsive image size
-			updateResponsiveImages(mqSync.getMediaQuery());
-		};
+			this.update(mqSync.getMediaQuery());
+		},
 
 		// Run through each responsive image and see if an image exists at that media query
-		var updateResponsiveImages = function (newMediaQuery) {
+		update: function (newMediaQuery) {
 			$('img.responsive').each(function () {
 				var $img = $(this),
 					currentSource = $img.data(newMediaQuery + '-src');
@@ -115,12 +118,8 @@ var mqSync = {
 					$img.attr('src', currentSource);
 				}
 			});
-		};
+		}
 
-		return {
-			init: init,
-			updateResponsiveImages: updateResponsiveImages
-		};
 	}
 
 };
@@ -128,7 +127,4 @@ var mqSync = {
 // Do this stuff when the page is ready
 $(document).ready(function () {
 	mqSync.init();
-
-	// Resize images automatically
-	mqSync.resizeImages().init();
 });
