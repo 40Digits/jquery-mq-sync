@@ -20,14 +20,14 @@
 			];
 
 			// Set the order of media queries we're using
-			mqSync.setOrder(mqOrder);
+			$.mqSync.setOrder(mqOrder);
 
 			// Every time the media query changes, do these things
 			function onMediaQueryChange (event, newMediaQuery, oldMediaQuery) {
-				if (mqSync.isBelow('mq-medium'))
+				if ($.mqSync.isBelow('mq-medium'))
 					$('#result').append(currentMediaQuery + ' is smaller than large<br />');
 
-				if (mqSync.isAbove('mq-large'))
+				if ($.mqSync.isAbove('mq-large'))
 					$('#result').append(currentMediaQuery + ' is bigger than large<br />');
 			}
 
