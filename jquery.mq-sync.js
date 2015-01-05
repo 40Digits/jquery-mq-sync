@@ -2,7 +2,8 @@
 
 	$.mqSync = {
 		currentMediaQuery: '', // The current media query
-		mqOrder: [], // The order of the media queries
+		mqOrderNamed: {}, // The order of the named media queries
+		mqOrderNumbered: [], // The order of the media queries
 
 		/**
 		 * Set up the media query plugin
@@ -103,15 +104,13 @@
 		 * @param orderedArray An array of the media queries in order from smallest to largest
 		 */
 		setOrder: function (orderedArray) {
-			var mqName;
+			var self = this;
 
-			// Loop through the supplied media queries
-			for (var i = 0; i < orderedArray.length; i++) {
-				mqName = orderedArray[i];
+			this.mqOrderNumbered = orderedArray;
 
-				// Make an associative array we can use
-				this.mqOrder[mqName] = i;
-			}
+			$.each(orderedArray, function(index, value) {
+				self.mqOrderNamed[value] = index;
+			});
 		},
 
 		/**
@@ -132,6 +131,11 @@
 
 				$('html').on('mediaQueryChange', onMediaQueryChange);
 
+				// Loop through each and store its original source
+				$('img.responsive').each(function () {
+					$(this).data('original-src', $(this).attr('src'));
+				});
+
 				// Update the current responsive image size
 				this.update();
 			},
@@ -147,12 +151,36 @@
 
 				// Loop over each responsive image and update its source
 				$('img.responsive').each(function () {
-					var $img = $(this),
-						currentSource = $img.data(newMediaQuery + '-src');
+					var mqOrderNumbered = $.mqSync.mqOrderNumbered,
+						$img = $(this),
+						mqMax = 0,
+						current,
+						currentSource = null;
 
-					// There is an image supplied for this media query
+					mqMax = $.mqSync.mqOrderNamed[newMediaQuery];
+
+					// If there is an ordered list of media queries
+					if ($.mqSync.mqOrderNumbered.length > 0) {
+						// Loop backwards and find the nearest match
+						for (var ii = mqMax; ii >= 0; ii--) {
+							current = $.mqSync.mqOrderNumbered[ii];
+							currentSource = $img.data(current + '-src');
+
+							if (currentSource != null) {
+								break;
+							}
+						}
+					} else {
+						// No ordered list of media queries, so just check the current
+						currentSource = $img.data(newMediaQuery + '-src');
+					}
+
 					if (currentSource) {
-						$img.attr('src', currentSource);
+						// There is an image supplied for this media query
+ 						$img.attr('src', currentSource);
+					} else {
+						// Default to the original image
+						$img.attr('src', $img.data('original-src'));
 					}
 				});
 			}
