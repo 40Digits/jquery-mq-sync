@@ -38,7 +38,7 @@
 		 */
 		matches: function (which) {
 			// See if the current media query matches the requested one
-			return (currentMediaQuery == requestedQueryName);
+			return (currentMediaQuery == which);
 		},
 
 
@@ -47,7 +47,7 @@
 		 * @param which The media query to check against
 		 */
 		isAbove: function (which) {
-			if (this.mqOrder[currentMediaQuery] > this.mqOrder[which])
+			if (this.mqOrderNamed[currentMediaQuery] > this.mqOrderNamed[which])
 				return true;
 
 			return false;
@@ -59,7 +59,7 @@
 		 * @param which The media query to check against
 		 */
 		isBelow: function (which) {
-			if (this.mqOrder[currentMediaQuery] < this.mqOrder[which])
+			if (this.mqOrderNamed[currentMediaQuery] < this.mqOrderNamed[which])
 				return true;
 
 			return false;
@@ -154,7 +154,6 @@
 					var mqOrderNumbered = $.mqSync.mqOrderNumbered,
 						$img = $(this),
 						mqMax = 0,
-						current,
 						currentSource = null;
 
 					mqMax = $.mqSync.mqOrderNamed[newMediaQuery];
@@ -163,8 +162,7 @@
 					if ($.mqSync.mqOrderNumbered.length > 0) {
 						// Loop backwards and find the nearest match
 						for (var ii = mqMax; ii >= 0; ii--) {
-							current = $.mqSync.mqOrderNumbered[ii];
-							currentSource = $img.data(current + '-src');
+							currentSource = $img.data($.mqSync.mqOrderNumbered[ii] + '-src');
 
 							if (currentSource != null) {
 								break;
