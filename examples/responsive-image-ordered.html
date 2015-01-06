@@ -31,16 +31,13 @@
 </head>
 <body>
 
-	<h1>Responsive image replacement</h1>
-	<p>This example demonstrates how to use the automatic responsive image replacement.</p>
+	<h1>Responsive image replacement with media query order</h1>
+	<p>This example demonstrates how to use the automatic responsive image replacement that falls back to the next smallest media query.</p>
+	<p>Because the medium media query source is set, all media queries listed after medium will use this image.</p>
 
 	<img class="responsive"
 		src="images/480x270.jpg"
-		data-mq-small-src="images/480x270.jpg"
 		data-mq-medium-src="images/800x450.jpg"
-		data-mq-large-src="images/1024x575.jpg"
-		data-mq-xlarge-src="images/1280x720.jpg"
-		data-mq-xxlarge-src="images/2048x1150.jpg"
 		alt="Responsive image" />
 
 </body>
