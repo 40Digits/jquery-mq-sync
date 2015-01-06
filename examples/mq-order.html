@@ -24,11 +24,11 @@
 
 			// Every time the media query changes, do these things
 			function onMediaQueryChange (event, newMediaQuery, oldMediaQuery) {
-				if ($.mqSync.isBelow('mq-medium'))
-					$('#result').append(currentMediaQuery + ' is smaller than large<br />');
+				if ($.mqSync.isBelow('mq-large'))
+					$('#result').append(newMediaQuery + ' is smaller than large<br />');
 
 				if ($.mqSync.isAbove('mq-large'))
-					$('#result').append(currentMediaQuery + ' is bigger than large<br />');
+					$('#result').append(newMediaQuery + ' is bigger than large<br />');
 			}
 
 			$('html').on('mediaQueryChange', onMediaQueryChange);

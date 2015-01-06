@@ -11,26 +11,12 @@
 		 */
 		init: function (options) {
 			// Initialize the media query
-			currentMediaQuery = this.fetchMediaQuery();
-			$('body').data('media-query', currentMediaQuery);
+			this.currentMediaQuery = this.fetchMediaQuery();
+			$('body').data('media-query', this.currentMediaQuery);
 
 			// On window resize, set media query var
 			$(window).resize(this.onResize);
 		},
-
-		/**
-		 * Return the current media query
-		 */
-		getMediaQuery: function () {
-			return currentMediaQuery;
-		},
-
-
-		/**
-		 * Alias to get the current media query
-		 */
-		mq: this.getMediaQuery,
-
 
 		/**
 		 * Check if the media query name is a match
@@ -38,7 +24,7 @@
 		 */
 		matches: function (which) {
 			// See if the current media query matches the requested one
-			return (currentMediaQuery == which);
+			return (this.fetchMediaQuery() == which);
 		},
 
 
@@ -47,10 +33,7 @@
 		 * @param which The media query to check against
 		 */
 		isAbove: function (which) {
-			if (this.mqOrderNamed[currentMediaQuery] > this.mqOrderNamed[which])
-				return true;
-
-			return false;
+			return (this.mqOrderNamed[this.fetchMediaQuery()] >= this.mqOrderNamed[which]);
 		},
 
 
@@ -59,10 +42,7 @@
 		 * @param which The media query to check against
 		 */
 		isBelow: function (which) {
-			if (this.mqOrderNamed[currentMediaQuery] < this.mqOrderNamed[which])
-				return true;
-
-			return false;
+			return (this.mqOrderNamed[this.fetchMediaQuery()] < this.mqOrderNamed[which]);
 		},
 
 
@@ -70,16 +50,16 @@
 		 * When the browser is resized, update the media query
 		 */
 		onResize: function () {
-			var lastQuery = currentMediaQuery;
+			var lastQuery = this.currentMediaQuery;
 
 			// Set the global current media query
-			currentMediaQuery = $.mqSync.fetchMediaQuery();
+			this.currentMediaQuery = $.mqSync.fetchMediaQuery();
 
 			// The media query does not match the old
-			if (currentMediaQuery != lastQuery) {
+			if (this.currentMediaQuery != lastQuery) {
 				// Fire an event noting that the media query has changed
-				$('html').trigger('mediaQueryChange', [currentMediaQuery, lastQuery]);
-				$('body').data('media-query', currentMediaQuery);
+				$('html').trigger('mediaQueryChange', [this.currentMediaQuery, lastQuery]);
+				$('body').data('media-query', this.currentMediaQuery);
 			}
 
 		},
@@ -147,7 +127,7 @@
 			update: function (newMediaQuery) {
 				// Default to the current media query - just run an update
 				if (newMediaQuery == null)
-					newMediaQuery = $.mqSync.getMediaQuery();
+					newMediaQuery = $.mqSync.fetchMediaQuery();
 
 				// Loop over each responsive image and update its source
 				$('img.responsive').each(function () {
