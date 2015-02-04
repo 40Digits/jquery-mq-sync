@@ -70,7 +70,7 @@
 		 */
 		fetchMediaQuery: function () {
 			// We read in the media query name from the html element's font family
-			var mq = $('html').css('font-family');
+			var mq = $('head').css('font-family');
 
 			// Strip out quotes and commas
 			mq = mq.replace(/['",]/g, '');
