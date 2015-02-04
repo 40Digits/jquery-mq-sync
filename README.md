@@ -18,11 +18,11 @@ This lightweight script offers a way to do various checks against CSS media quer
 
 
 ### 3. Set up CSS Media Queries
-Media Query Sync looks at the `font-family` property of the `html` element.  Using CSS, set up your media queries with appropriate names:
+Media Query Sync looks at the `font-family` property of the `head` element.  Using CSS, set up your media queries with appropriate names:
 
 ```css
 @media (min-width: 480px) {
-	html {
+	head {
 		font-family: 'mq-small';
 	}
 }
