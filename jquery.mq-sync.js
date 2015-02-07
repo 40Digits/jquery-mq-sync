@@ -113,19 +113,26 @@
 
 				// Loop through each and store its original source
 				$('.mqsync-responsive').each(function () {
-					var $image = $(this),
-						imageSrc;
-
-					if ($image.is('img'))
-						imageSrc = $image.attr('src');
-					else
-						imageSrc = $image.css('background-image').replace(/^url\(['"]?/,'').replace(/['"]?\)$/,'');
-
-					$image.data('original-src', imageSrc);
+					storeOriginalSource($(this));
 				});
 
 				// Update the current responsive image size
 				this.update();
+			},
+
+			/**
+			 * Store the original source in case it's needed later
+			 * @param $whichElement Which element to store the source on
+			 */
+			storeOriginalSource: function ($whichElement) {
+				var imageSrc;
+
+				if ($image.is('img'))
+					imageSrc = $image.attr('src');
+				else
+					imageSrc = $image.css('background-image').replace(/^url\(['"]?/,'').replace(/['"]?\)$/,'');
+
+				$image.data('original-src', imageSrc);
 			},
 
 			/**
@@ -173,13 +180,13 @@
 					}
 				});
 
-				$('[data-')
 			},
 
 
 			/**
 			 * Swap out either an <img>s source or the background image of another element.
-			 * @param newMediaQuery [current] The new media query to load
+			 * @param $target The jQuery element you want to swap an image on
+			 * @param newImageSrc The source for the new image to use
 			 */
 			swapImage: function($target, newImageSrc) {
 				if ($target.is('img'))
@@ -188,7 +195,61 @@
  					$target.css('background-image', 'url(' + newImageSrc + ')');
 			}
 
-		} // End responsive images module
+		}, // End responsive images module
+
+
+		/**
+		 * This module resizes children to all have the same height
+		*/
+		responsiveSameheight: {
+			$responsiveContainers: {},
+
+			/**
+			 * Initialize events
+			 */
+			init: function () {
+				var self = this;
+
+				$responsiveContainers = $('.mqsync-sameheight');
+
+				// Every time the media query changes, do these things
+				function onMediaQueryChange (event, newMediaQuery, oldMediaQuery) {
+					self.update(newMediaQuery);
+				}
+
+				$('html').on('mediaQueryChange', onMediaQueryChange);
+
+				this.update();
+			},
+
+			/**
+			 * Adjust the height of the children elements
+			 */
+			update: function () {
+				console.log('update');
+				// Loop over all the responsive sameheight containers
+				$responsiveContainers.each(function () {
+					var $children = $(this).children(),
+						maxHeight = 0;
+
+					// Loop over each and get the tallest one
+					$children.each(function () {
+						var $element = $(this),
+							elementHeight;
+
+						$element.height('auto');
+						elementHeight = $element.height();
+
+						if (elementHeight > maxHeight)
+							maxHeight = elementHeight;
+					});
+
+					// Set them all to that height
+					$children.height(maxHeight);
+				});
+			}
+
+		} // End responsive sameheight module
 
 	};
 
