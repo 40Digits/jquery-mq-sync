@@ -28,17 +28,33 @@
 		});
 	</script>
 
+	<style>
+		.example-background {
+			display: inline-block;
+			width: 30rem;
+			height: 20rem;
+			border: 2px solid black;
+			background-size: cover;
+		}
+		@media (min-width: 768px) {
+			.example-background {
+				width: 60rem;
+				height: 35rem;
+			}
+		}
+	</style>
+
 </head>
 <body>
 
-	<h1>Responsive image replacement with media query order</h1>
+	<h1>Responsive background image replacement</h1>
 	<p>This example demonstrates how to use the automatic responsive image replacement that falls back to the next smallest media query.</p>
-	<p>Because the medium media query source is set, all media queries listed after medium will use this image.</p>
+	<p>Adding the .mqsync-responsive class on a tag other than &lt;img&gt; will swap out the background image.</p>
 
-	<img class="mqsync-responsive"
-		src="images/480x270.jpg"
-		data-mq-medium-src="images/800x450.jpg"
-		alt="Responsive image" />
+	<div class="example-background mqsync-responsive"
+		style="background-image: url(images/480x270.jpg)"
+		data-mq-medium-src="images/800x450.jpg">
+	</div>
 
 </body>
 </html>

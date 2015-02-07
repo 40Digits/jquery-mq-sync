@@ -112,8 +112,16 @@
 				$('html').on('mediaQueryChange', onMediaQueryChange);
 
 				// Loop through each and store its original source
-				$('img.responsive').each(function () {
-					$(this).data('original-src', $(this).attr('src'));
+				$('.mqsync-responsive').each(function () {
+					var $image = $(this),
+						imageSrc;
+
+					if ($image.is('img'))
+						imageSrc = $image.attr('src');
+					else
+						imageSrc = $image.css('background-image').replace(/^url\(['"]?/,'').replace(/['"]?\)$/,'');
+
+					$image.data('original-src', imageSrc);
 				});
 
 				// Update the current responsive image size
@@ -125,12 +133,15 @@
 			 * @param newMediaQuery [current] The new media query to load
 			 */
 			update: function (newMediaQuery) {
+				var $responsiveImages = $('.mqsync-responsive'),
+					self = this;
+
 				// Default to the current media query - just run an update
 				if (newMediaQuery == null)
 					newMediaQuery = $.mqSync.fetchMediaQuery();
 
 				// Loop over each responsive image and update its source
-				$('img.responsive').each(function () {
+				$responsiveImages.each(function () {
 					var mqOrderNumbered = $.mqSync.mqOrderNumbered,
 						$img = $(this),
 						mqMax = 0,
@@ -155,12 +166,26 @@
 
 					if (currentSource) {
 						// There is an image supplied for this media query
- 						$img.attr('src', currentSource);
+						self.swapImage($img, currentSource);
 					} else {
 						// Default to the original image
-						$img.attr('src', $img.data('original-src'));
+						self.swapImage($img, $img.data('original-src'));
 					}
 				});
+
+				$('[data-')
+			},
+
+
+			/**
+			 * Swap out either an <img>s source or the background image of another element.
+			 * @param newMediaQuery [current] The new media query to load
+			 */
+			swapImage: function($target, newImageSrc) {
+				if ($target.is('img'))
+ 					$target.attr('src', newImageSrc);
+ 				else
+ 					$target.css('background-image', 'url(' + newImageSrc + ')');
 			}
 
 		} // End responsive images module
