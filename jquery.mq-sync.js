@@ -1,15 +1,19 @@
 (function ($) {
 
 	$.mqSync = {
+		$listenElement: {},
 		currentMediaQuery: '', // The current media query
-		mqOrderNamed: {}, // The order of the named media queries
-		mqOrderNumbered: [], // The order of the media queries
 
 		/**
 		 * Set up the media query plugin
 		 * @param options The options to pass at run time
 		 */
 		init: function (options) {
+			window.mqOrderNamed = !!(window.mqOrderNamed) ? window.mqOrderNamed : {};
+			window.mqOrderNumbered = !!(window.mqOrderNumbered) ? window.mqOrderNumbered : [];
+
+			this.$listenElement = $('head');
+
 			// Initialize the media query
 			this.currentMediaQuery = this.fetchMediaQuery();
 			$('body').data('media-query', this.currentMediaQuery);
@@ -33,7 +37,10 @@
 		 * @param which The media query to check against
 		 */
 		isAbove: function (which) {
-			return (this.mqOrderNamed[this.fetchMediaQuery()] >= this.mqOrderNamed[which]);
+			var currentMq = window.mqOrderNamed[this.fetchMediaQuery()],
+				whichMq = window.mqOrderNamed[which];
+
+			return (currentMq >= whichMq);
 		},
 
 
@@ -42,7 +49,10 @@
 		 * @param which The media query to check against
 		 */
 		isBelow: function (which) {
-			return (this.mqOrderNamed[this.fetchMediaQuery()] < this.mqOrderNamed[which]);
+			var currentMq = window.mqOrderNamed[this.fetchMediaQuery()],
+				whichMq = window.mqOrderNamed[which];
+
+			return (currentMq < whichMq);
 		},
 
 
@@ -70,7 +80,7 @@
 		 */
 		fetchMediaQuery: function () {
 			// We read in the media query name from the html element's font family
-			var mq = $('head').css('font-family');
+			var mq = this.$listenElement.css('font-family');
 
 			// Strip out quotes and commas
 			mq = mq.replace(/['",]/g, '');
