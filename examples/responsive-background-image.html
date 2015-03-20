@@ -5,45 +5,17 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>jQuery Media Query sync</title>
 	<link rel="stylesheet" href="media-queries.css" type="text/css" media="screen" />
-	<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
-	<script type="text/javascript" src="../jquery.mq-sync.js"></script>
-
-	<script type="text/javascript">
-		$(document).ready(function () {
-
-			var mqOrder = [
-				'mq-small',
-				'mq-medium',
-				'mq-large',
-				'mq-xlarge',
-				'mq-xxlarge'
-			];
-
-			// Set the order of media queries we're using
-			$.mqSync.setOrder(mqOrder);
-
-			// Initiate the responsive images module
-			$.mqSync.responsiveImages.init();
-
-		});
-	</script>
-
 	<style>
 		.example-background {
 			display: inline-block;
-			width: 30rem;
-			height: 20rem;
+			width: 100%;
+			height: 0;
+			padding-top: 66.667%;
 			border: 2px solid black;
 			background-size: cover;
-		}
-		@media (min-width: 768px) {
-			.example-background {
-				width: 60rem;
-				height: 35rem;
-			}
+			background-position: center;
 		}
 	</style>
-
 </head>
 <body>
 
@@ -51,10 +23,25 @@
 	<p>This example demonstrates how to use the automatic responsive image replacement that falls back to the next smallest media query.</p>
 	<p>Adding the .mqsync-responsive class on a tag other than &lt;img&gt; will swap out the background image.</p>
 
+	<pre>.mqsync-responsive (default)</pre>
 	<div class="example-background mqsync-responsive"
 		style="background-image: url(images/480x270.jpg)"
-		data-mq-medium-src="images/800x450.jpg">
+		data-mq-medium="images/800x450.jpg">
 	</div>
 
+	<pre>.my-custom-class (default)</pre>
+	<div class="example-background my-custom-class"
+		style="background-image: url(images/480x270.jpg)"
+		data-mq-medium="images/800x450.jpg">
+	</div>
+
+	<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript" src="../jquery.mq-sync.js"></script>
+	<script type="text/javascript">
+	// instantiate the responsive images module with the default selector
+	$.mqSync.responsiveImages();
+	// instantiate the responsive images module with a custom selector
+	$.mqSync.responsiveImages('.my-custom-class');
+	</script>
 </body>
 </html>
