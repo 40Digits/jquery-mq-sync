@@ -84,16 +84,16 @@ Your images must include `data` attributes that have your different image source
 
 ## Methods
 
-### ```isBelow( string )```
+#### ```isBelow( string )```
 `string`: the media query to check against.
 Returns `true` if the current media query is below a specified media query, and `false` otherwise.
 
-### ```isAbove( string )```
+#### ```isAbove( string )```
 `string`: the media query to check against.
 Returns `true` if the current media query is above a specified media query, and `false` otherwise.
 
-### ```responsiveImages( string || element )```
-`element`: jQuery Element (Default `.mqsync-responsive`)
+#### ```responsiveImages( string || element )```
+`string || element`: jQuery Element. Can pass in a string `.my-custom-class` or jquery element `$('.my-custom-class')` (Default `.mqsync-responsive`)
 Replaces images automagically across specified breakpoints for selected elements. Use `data` attributes to provide the image sources.
 ```html
 <img class="mqsync-responsive" src="default-image.jpg" data-mq-mini="mini-image-src.jpg" data-mq-large="large-image-src.jpg" />
