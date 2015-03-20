@@ -1,86 +1,97 @@
-(function ($) {
+(function (factory) {
+	if (typeof module === "object" && typeof module.exports === "object") {
+		module.exports = factory(require("jquery"), window, document);
+	} else {
+		factory(jQuery, window, document);
+	}
+}(function($, window, document) {
 
-	$.mqSync = {
-		$listenElement: {},
-		currentMediaQuery: '', // The current media query
+	var	$body = $('body'),
+		$listenElement = $('head'),
+		mqOrderNamed = !!(mqOrderNamed) ? mqOrderNamed : {},
+		mqOrderNumbered = !!(mqOrderNumbered) ? mqOrderNumbered : [],
+
+		currentMediaQuery,
+		mqSync = {},
 
 		/**
 		 * Set up the media query plugin
-		 * @param options The options to pass at run time
 		 */
-		init: function (options) {
-			window.mqOrderNamed = !!(window.mqOrderNamed) ? window.mqOrderNamed : {};
-			window.mqOrderNumbered = !!(window.mqOrderNumbered) ? window.mqOrderNumbered : [];
+		init = function() {
+			// setup public stuff
+			mqSync = {
+				listenElement: $listenElement,
+				responsiveImages: responsiveImages,
+				isBelow: checkBelow,
+				isAbove: checkAbove
+			};
 
-			this.$listenElement = $('head');
-
-			// Initialize the media query
-			this.currentMediaQuery = this.fetchMediaQuery();
-			$('body').data('media-query', this.currentMediaQuery);
+			currentMediaQuery = fetchMediaQuery();
+			$body.data('media-query', currentMediaQuery);
+			
+			// set the order of the breakpoints
+			setOrder();
 
 			// On window resize, set media query var
-			$(window).resize(this.onResize);
+			$(window).resize(onResize);
+
+			$.mqSync = mqSync;
 		},
 
 		/**
 		 * Check if the media query name is a match
 		 * @param which The media query to check against
 		 */
-		matches: function (which) {
+		matches = function(which) {
 			// See if the current media query matches the requested one
-			return (this.fetchMediaQuery() == which);
+			return (fetchMediaQuery() == which);
 		},
-
 
 		/**
 		 * Check if the media query is greater than the specified
 		 * @param which The media query to check against
 		 */
-		isAbove: function (which) {
-			var currentMq = window.mqOrderNamed[this.fetchMediaQuery()],
-				whichMq = window.mqOrderNamed[which];
+		checkAbove = function (which) {
+			var currentMq = mqOrderNamed[fetchMediaQuery()],
+				whichMq = mqOrderNamed[which];
 
 			return (currentMq >= whichMq);
 		},
-
 
 		/**
 		 * Check if the media query is less than the specified
 		 * @param which The media query to check against
 		 */
-		isBelow: function (which) {
-			var currentMq = window.mqOrderNamed[this.fetchMediaQuery()],
-				whichMq = window.mqOrderNamed[which];
+		checkBelow = function (which) {
+			var currentMq = mqOrderNamed[fetchMediaQuery()],
+				whichMq = mqOrderNamed[which];
 
 			return (currentMq < whichMq);
 		},
 
-
 		/**
 		 * When the browser is resized, update the media query
 		 */
-		onResize: function () {
-			var lastQuery = this.currentMediaQuery;
+		onResize = function () {
+			var lastQuery = currentMediaQuery;
 
 			// Set the global current media query
-			this.currentMediaQuery = $.mqSync.fetchMediaQuery();
+			currentMediaQuery = fetchMediaQuery();
 
 			// The media query does not match the old
-			if (this.currentMediaQuery != lastQuery) {
+			if (currentMediaQuery != lastQuery) {
 				// Fire an event noting that the media query has changed
-				$('html').trigger('mediaQueryChange', [this.currentMediaQuery, lastQuery]);
-				$('body').data('media-query', this.currentMediaQuery);
+				mqSync.listenElement.trigger('mediaQueryChange', [currentMediaQuery, lastQuery]);
+				$body.data('media-query', currentMediaQuery);
 			}
-
 		},
-
 
 		/**
 		 * Read in the media query
 		 */
-		fetchMediaQuery: function () {
+		fetchMediaQuery = function () {
 			// We read in the media query name from the html element's font family
-			var mq = this.$listenElement.css('font-family');
+			var mq = mqSync.listenElement.css('font-family');
 
 			// Strip out quotes and commas
 			mq = mq.replace(/['",]/g, '');
@@ -88,185 +99,224 @@
 			return mq;
 		},
 
-
 		/**
 		 * Set the order of media queries
 		 * @param orderedArray An array of the media queries in order from smallest to largest
 		 */
-		setOrder: function (orderedArray) {
-			var self = this;
-
-			this.mqOrderNumbered = orderedArray;
-
-			$.each(orderedArray, function(index, value) {
-				self.mqOrderNamed[value] = index;
+		setOrder = function () {
+			var mediaQueries = window.getComputedStyle(mqSync.listenElement.get(0), ':after').getPropertyValue('font-family');
+			mqOrderNumbered = mediaQueries.replace("'", "").split(',');
+			$.each(mqOrderNumbered, function(index, value) {
+				mqOrderNamed[value] = index;
 			});
 		},
 
 		/**
 		 * This module resizes responsive images automatically
+		 * @param $el jQuery object or string element reference
 		*/
-		responsiveImages: {
+		responsiveImages = function($el) {
 
-			/**
-			 * Initialize events
-			 */
-			init: function() {
-				var self = this;
+				// set up valid images variable. checks if the param is a string or jquery element
+			var $images = ( typeof $el === 'string' ) ? $($el) : $el,
+				// set up the responsive images to manipulate. uses default if undefined
+				$responsiveImages = $images ? $images : $('.mqsync-responsive'),
+				// array to hold all known src's attached to images
+				knownSizes = [],
 
-				// Every time the media query changes, do these things
-				function onMediaQueryChange (event, newMediaQuery, oldMediaQuery) {
-					self.update(newMediaQuery);
-				}
+				init = function() {
+					var $img;
 
-				$('html').on('mediaQueryChange', onMediaQueryChange);
+					// When the media query changes
+					mqSync.listenElement.on('mediaQueryChange', onMediaQueryChange);
 
-				// Loop through each and store its original source
-				$('.mqsync-responsive').each(function () {
-					storeOriginalSource($(this));
-				});
-
-				// Update the current responsive image size
-				this.update();
-			},
-
-			/**
-			 * Store the original source in case it's needed later
-			 * @param $whichElement Which element to store the source on
-			 */
-			storeOriginalSource: function ($whichElement) {
-				var imageSrc;
-
-				if ($image.is('img'))
-					imageSrc = $image.attr('src');
-				else
-					imageSrc = $image.css('background-image').replace(/^url\(['"]?/,'').replace(/['"]?\)$/,'');
-
-				$image.data('original-src', imageSrc);
-			},
-
-			/**
-			 * Run through each responsive image and see if an image exists at that media query
-			 * @param newMediaQuery [current] The new media query to load
-			 */
-			update: function (newMediaQuery) {
-				var $responsiveImages = $('.mqsync-responsive'),
-					self = this;
-
-				// Default to the current media query - just run an update
-				if (newMediaQuery == null)
-					newMediaQuery = $.mqSync.fetchMediaQuery();
-
-				// Loop over each responsive image and update its source
-				$responsiveImages.each(function () {
-					var mqOrderNumbered = $.mqSync.mqOrderNumbered,
-						$img = $(this),
-						mqMax = 0,
-						currentSource = null;
-
-					mqMax = $.mqSync.mqOrderNamed[newMediaQuery];
-
-					// If there is an ordered list of media queries
-					if ($.mqSync.mqOrderNumbered.length > 0) {
-						// Loop backwards and find the nearest match
-						for (var ii = mqMax; ii >= 0; ii--) {
-							currentSource = $img.data($.mqSync.mqOrderNumbered[ii] + '-src');
-
-							if (currentSource != null) {
-								break;
-							}
-						}
-					} else {
-						// No ordered list of media queries, so just check the current
-						currentSource = $img.data(newMediaQuery + '-src');
-					}
-
-					if (currentSource) {
-						// There is an image supplied for this media query
-						self.swapImage($img, currentSource);
-					} else {
-						// Default to the original image
-						self.swapImage($img, $img.data('original-src'));
-					}
-				});
-
-			},
-
-
-			/**
-			 * Swap out either an <img>s source or the background image of another element.
-			 * @param $target The jQuery element you want to swap an image on
-			 * @param newImageSrc The source for the new image to use
-			 */
-			swapImage: function($target, newImageSrc) {
-				if ($target.is('img'))
- 					$target.attr('src', newImageSrc);
- 				else
- 					$target.css('background-image', 'url(' + newImageSrc + ')');
-			}
-
-		}, // End responsive images module
-
-
-		/**
-		 * This module resizes children to all have the same height
-		*/
-		responsiveSameheight: {
-			$responsiveContainers: {},
-
-			/**
-			 * Initialize events
-			 */
-			init: function () {
-				var self = this;
-
-				$responsiveContainers = $('.mqsync-sameheight');
-
-				// Every time the media query changes, do these things
-				function onMediaQueryChange (event, newMediaQuery, oldMediaQuery) {
-					self.update(newMediaQuery);
-				}
-
-				$('html').on('mediaQueryChange', onMediaQueryChange);
-
-				this.update();
-			},
-
-			/**
-			 * Adjust the height of the children elements
-			 */
-			update: function () {
-				console.log('update');
-				// Loop over all the responsive sameheight containers
-				$responsiveContainers.each(function () {
-					var $children = $(this).children(),
-						maxHeight = 0;
-
-					// Loop over each and get the tallest one
-					$children.each(function () {
-						var $element = $(this),
-							elementHeight;
-
-						$element.height('auto');
-						elementHeight = $element.height();
-
-						if (elementHeight > maxHeight)
-							maxHeight = elementHeight;
+					// Loop through each and store its original source
+					$responsiveImages.each(function() {
+						$img = $(this);
+						storeSizes($img);
 					});
 
-					// Set them all to that height
-					$children.height(maxHeight);
-				});
-			}
+					// Update the current responsive image size
+					update();
+				},
 
-		} // End responsive sameheight module
+				// Every time the media query changes, do these things
+				onMediaQueryChange = function(event, newMediaQuery) {
+					update(newMediaQuery);
+				},
 
-	};
+				/**
+				 * Store the image sources attached to each responsive image, making each check on mq change more effecient
+				 * @param $image Which element to pull sizes from
+				 */
+				storeSizes = function($image) {
+					var $img = $image,
+						sizes = {},
+						mqName;
 
+					sizes.image = $img;
+					sizes.loaded = [];
+					sizes['original-src'] = sizes['active-src'] = getSource($img);
 
-	// Do this stuff when the page is ready
-	$(document).ready(function () {
-		$.mqSync.init();
-	});
+					// loop over all the data attr's on the image
+					$.each($img.data(), function(key, value) {
+						// jQuery turns data attr's into camelcase strings, so make sure they are dashed instead
+						mqName = toDashed(key);
+						// make sure the stores src is an absolute url
+						sizes[mqName] = value;
+					});
 
-}(jQuery));
+					// add the sizes for this image to the array
+					knownSizes.push(sizes);
+				},
+
+				/**
+				 * Turns camelcase string into dashed
+				 * @param string The string to manipulate
+				 */
+				toDashed = function(string) {
+					var words = [],
+						currentChar = '',
+						currentWord = '',
+						i = 0;
+
+					for (i; string.length >= i; i++) {
+						currentChar = string.charAt(i);
+						
+						if ( currentChar === currentChar.toUpperCase() ) {
+							words.push(currentWord);
+							currentWord = currentChar.toLowerCase();
+						} else {
+							currentWord = currentWord + currentChar;
+						}
+					}
+					
+					words = words.join('-');
+					return words;
+				},
+
+				/**
+				 * Return the current image source
+				 * @param $image Which element to store the source on
+				 */
+				getSource = function ($image) {
+					var imageSrc;
+
+					if ($image.is('img')) {
+						imageSrc = $image.attr('src');
+					} else {
+						imageSrc = $image.css('background-image').replace(/^url\(['"]?/,'').replace(/['"]?\)$/,'');
+					}
+
+					return imageSrc;
+				},
+
+				/**
+				 * Run through each responsive image and see if an image exists at that media query
+				 * @param newMediaQuery [current] The new media query to load
+				 */
+				update = function (newMediaQuery) {
+					var isLoaded;
+
+					// Default to the current media query - just run an update
+					if (newMediaQuery == null)
+						newMediaQuery = fetchMediaQuery();
+
+					// Loop over each known size and update the image src if it has one for this breakpoint
+					$.each(knownSizes, function (i) {
+						// store the current image object in the loop
+						var currentImage = knownSizes[i],
+							// store the new source from the know sizes if there is one
+							newSource = currentImage[newMediaQuery];
+
+						// if a new source isn't set
+						if (!newSource) {
+							var ii = mqOrderNamed[newMediaQuery],
+								mq;
+
+							// decrement through the numbered mq's
+							for (ii; ii > 0; ii--) {
+								mq = mqOrderNumbered[ii];
+
+								// if a matched mq is found on the image
+								if (currentImage[mq]) {
+									// set the new source
+									newSource = currentImage[mq];
+									break; // break that loop
+								}
+							}
+							// if after all that no source was found then just revert back to the original source
+							newSource = newSource || currentImage['original-src'];
+						}
+
+						// if the new source is not the active source
+						if (!newSource.includes(currentImage['active-src'])) {
+
+							// loop over all loaded images and see if the new source has been loaded
+							$.each(currentImage.loaded, function(i) {
+								isLoaded = currentImage.loaded[i].includes(newSource);
+							});
+
+							// if the new source has been loaded
+							if (isLoaded) {
+								// There is an image supplied for this media query
+								swapImage(currentImage.image, newSource);
+							} else {
+								// preload the image to swap
+								preload(newSource, function(src) {
+									// There is an image supplied for this media query
+									swapImage(currentImage.image, src);
+									// update the list of loaded src's
+									currentImage.loaded.push(src);
+								});
+							}
+
+							// update the active src
+							currentImage['active-src'] = newSource;
+						}
+					});
+				},
+
+				/**
+				 * Swap out either an <img>s source or the background image of another element.
+				 * @param $target The jQuery element you want to swap an image on
+				 * @param newImageSrc The source for the new image to use
+				 */
+				swapImage = function($target, newImageSrc) {
+					if ($target.is('img')) {
+	 					$target.attr('src', newImageSrc);
+					} else {
+						$target.css('background-image', 'url(' + newImageSrc + ')');
+					}
+				},
+
+				/**
+				 * Preload the new image before inserting it into the DOM
+				 * @param src The source of the image to load
+				 * @param callback The function to call when the image is loaded
+				 */
+				preload = function(src, callback) {
+					var img, imgLoaded = $.Deferred();
+					(function(url, imgLoaded) {
+						img = new Image();
+						img.onload = function() {
+							imgLoaded.resolve();
+						};
+						img.src = url;
+					})(src, imgLoaded);
+
+					// when the image is loaded trigger the callback
+					$.when($, imgLoaded).then(function() {
+						callback(img.src);
+						// clear the memory of that image
+						img = null;
+					});
+				};
+
+			init();
+		};
+
+	// set everything up
+	init();
+
+}));
