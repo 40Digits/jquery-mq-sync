@@ -5,22 +5,19 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>jQuery Media Query sync</title>
 	<link rel="stylesheet" href="media-queries.css" type="text/css" media="screen" />
+</head>
+<body>
+
+	<h1>Media Query order</h1>
+	<p>This example shows you how to tell if a media query is larger or smaller than another media query.</p>
+
+	<div id="result"></div>
+
 	<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 	<script type="text/javascript" src="../jquery.mq-sync.js"></script>
 
 	<script type="text/javascript">
 		$(document).ready(function () {
-
-			var mqOrder = [
-				'mq-small',
-				'mq-medium',
-				'mq-large',
-				'mq-xlarge',
-				'mq-xxlarge'
-			];
-
-			// Set the order of media queries we're using
-			$.mqSync.setOrder(mqOrder);
 
 			// Every time the media query changes, do these things
 			function onMediaQueryChange (event, newMediaQuery, oldMediaQuery) {
@@ -34,14 +31,5 @@
 			$('html').on('mediaQueryChange', onMediaQueryChange);
 		});
 	</script>
-
-</head>
-<body>
-
-	<h1>Media Query order</h1>
-	<p>This example shows you how to tell if a media query is larger or smaller than another media query.</p>
-
-	<div id="result"></div>
-
 </body>
 </html>
