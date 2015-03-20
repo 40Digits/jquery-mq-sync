@@ -4,7 +4,7 @@ This lightweight script offers a way to do various checks against CSS media quer
 
 
 ## Setup
-
+<!-- 
 There are two different ways to use MQ Sync.
 
 ### 1. Install With NPM
@@ -16,7 +16,7 @@ Then require the module inside of one of your modules.
 require('mq-sync');
 ```
 
-### 2. The Traditional Way
+### 2. The Traditional Way -->
 
 #### 1. Include jQuery
 
