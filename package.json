@@ -1,0 +1,25 @@
+{
+  "name": "mq-sync",
+  "version": "1.0.0",
+  "description": "This lightweight script offers a way to do various checks against CSS media queries in JavaScript and offers the ability to replace images based on the result.",
+  "main": "jquery.mq-sync.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "mq"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/40Digits/jquery-mq-sync.git"
+  },
+  "author": "40Digits",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/40Digits/jquery-mq-sync/issues"
+  },
+  "homepage": "https://github.com/40Digits/jquery-mq-sync",
+  "dependencies": {
+    "jquery": "^2.1.3"
+  }
+}
