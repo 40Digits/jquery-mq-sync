@@ -1,5 +1,5 @@
 /* List the order of your media queries */
-head:after {
+title {
 	font-family: 'mq-tiny,mq-small,mq-medium,mq-large,mq-xlarge,mq-xxlarge';
 }
 
