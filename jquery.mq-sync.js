@@ -217,7 +217,7 @@
 				 * @param newMediaQuery [current] The new media query to load
 				 */
 				update = function (newMediaQuery) {
-					var isLoaded;
+					var isLoaded = false;
 
 					// Default to the current media query - just run an update
 					if (newMediaQuery == null)
@@ -251,11 +251,14 @@
 						}
 
 						// if the new source is not the active source
-						if (!newSource.includes(currentImage['active-src'])) {
+						if (newSource.indexOf(currentImage['active-src']) === -1) {
 
 							// loop over all loaded images and see if the new source has been loaded
 							$.each(currentImage.loaded, function(i) {
-								isLoaded = currentImage.loaded[i].includes(newSource);
+								if (currentImage.loaded[i].indexOf(newSource) > 0) {
+									isLoaded = true;
+									return;
+								}
 							});
 
 							// if the new source has been loaded
