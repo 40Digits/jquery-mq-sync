@@ -7,6 +7,7 @@
 }(function($, window, document) {
 
 	var	$body = $('body'),
+		$orderElement = $('title'),
 		$listenElement = $('head'),
 		mqOrderNamed = !!(mqOrderNamed) ? mqOrderNamed : {},
 		mqOrderNumbered = !!(mqOrderNumbered) ? mqOrderNumbered : [],
@@ -104,7 +105,7 @@
 		 * @param orderedArray An array of the media queries in order from smallest to largest
 		 */
 		setOrder = function () {
-			var mediaQueries = window.getComputedStyle(mqSync.listenElement.get(0), ':after').getPropertyValue('font-family');
+			var mediaQueries = $orderElement.css('font-family');
 			mqOrderNumbered = mediaQueries.replace("'", "").split(',');
 			$.each(mqOrderNumbered, function(index, value) {
 				mqOrderNamed[value] = index;

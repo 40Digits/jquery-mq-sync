@@ -34,9 +34,9 @@ require('mq-sync');
 ### Set up CSS Media Queries
 Media Query Sync looks at the `font-family` property of the `head` element.
 
-MQ Sync needs to know the order of your breakpoints, so list them on `head:after`.
+MQ Sync needs to know the order of your breakpoints, so list them on `title`.
 ```css
-head:after {
+title {
 	font-family: 'mq-tiny,mq-small,mq-medium,mq-large,mq-xlarge,mq-xxlarge';
 }
 ```
